@@ -71,7 +71,8 @@ function Connect(){
 	onSuccess: Connected,
 	onFailure: ConnectionFailed,
 	keepAliveInterval: 10,
-useSSL: true,
+	useSSL: true,
+  
 });
 }
 
@@ -139,6 +140,7 @@ function MessageArrived(message) {
   if (message.destinationName == "client_id/hidro/mingg") {
 		mingg = message.payloadString;
 		document.getElementsByClassName("mingg")[0].innerHTML=mingg;
+    console.log(mingg);
 	} 
 
 
@@ -225,7 +227,7 @@ function MessageArrived(message) {
                         <label for="switch4" class="switch__label"></label>
                       </div> -->
                   <div class="dash_info_teks"> 
-                  <div id="mingg">Batas Nutrisi : <textarea style="font-weight: 900; color: #333;" readonly name="mingg" class="mingg" placeholder="Tekan Nomor " rows="1" cols="1" required></textarea>  </div>
+                  <div id="mingg">Saat ini, Minggu Ke : <textarea style="font-weight: 900; color: #333;" readonly name="mingg" class="mingg" placeholder="Tekan Nomor " rows="1" cols="1" required></textarea>  </div>
                     <h7> Bayam adalah tanaman hijau yang di tanam selama sekitar 30 hari. </h7> 
                     <h7> Masa Tumbuh Bayam dibagi menjadi 4 minggu atau fase yaitu : </h7> <br/>
                     <h7> - Minggu kesatu, semai </h7> <br/>
@@ -338,14 +340,15 @@ function MessageArrived(message) {
            var pompa_air = $('.pompa_air').val(); 
            var pompa_nuta = $('.pompa_nuta').val();  
            var pompa_nutb = $('.pompa_nutb').val();
-           var pompa_pengaduk = $('.pompa_pengaduk').val();  
+           var pompa_pengaduk = $('.pompa_pengaduk').val();
+           var mingg = $('.mingg').val();  
            var id_user = "<?php echo $_SESSION['id_user'] ?>";  
-           if(tds_value != '' && pompa_air != '' && pompa_nuta != '' && pompa_nutb != '' && pompa_pengaduk != '' )  
+           if(tds_value != '' && pompa_air != '' && pompa_nuta != '' && pompa_nutb != '' && pompa_pengaduk != ''  && mingg != '' )  
            {  
                 $.ajax({  
                      url:"simpandatabase.php",  
                      method:"POST",  
-                     data:{tdsValue:tds_value, relayAir:pompa_air, relayNuta:pompa_nuta, relayNutb:pompa_nutb, relayPengaduk:pompa_pengaduk, clientID:id_user},  
+                     data:{tdsValue:tds_value, relayAir:pompa_air, relayNuta:pompa_nuta, relayNutb:pompa_nutb, relayPengaduk:pompa_pengaduk, minggu:mingg, clientID:id_user},  
                      dataType:"text",  
                      success:function(data)  
                      {  
@@ -359,14 +362,14 @@ function MessageArrived(message) {
       }  
       setInterval(function(){   
            autoSave();   
-           }, 60000);  //save tiap 1 menit
+           }, 1800000);  //save tiap 30 mnt
  });  
  </script>
  <script type="text/javascript">
     var auto_refresh = setInterval(
     function () {
        $('.chart').load('grafik.php').fadeIn("slow");
-    }, 5000); // refresh setiap 30 seconds
+    }, 60000); // refresh setiap 1 menit
     
 </script>
 </body>

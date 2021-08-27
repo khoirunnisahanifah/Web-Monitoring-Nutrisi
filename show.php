@@ -18,13 +18,14 @@
                         <thead>
                           <tr>
                             <th class="text-center">No</th>
-                            <th>Tanggal</th>
-                            <th>Waktu</th>
-                            <th>Nilai Nutrisi Bak</th>
-                            <th>Pump Air</th>
-                            <th>Pump Nut A</th>
-                            <th>Pump Nut B</th>
-                            <th>Pump Pengaduk</th>
+                            <th>waktu</th>
+                            <th>Tgl</th>
+                            <th>Nilai Nutrisi </th>
+                            <th>Air</th>
+                            <th>Nutrisi A</th>
+                            <th>Nutrisi B</th>
+                            <th>Pengaduk</th>
+                            <th>Minggu </th>
                             <th>Aksi</th>
 
                           </tr>
@@ -43,6 +44,7 @@
                             $pompa_nuta = $row['pompa_nuta'];
 	                        	$pompa_nutb = $row['pompa_nutb'];
 	                        	$pompa_pengaduk = $row['pompa_pengaduk'];
+                            $minggu = $row['minggu'];
                           ?>
                             <tr>
                               <td><?php echo $i; ?></td>
@@ -53,6 +55,7 @@
                               <td><?php echo $pompa_nuta; ?></td>
                               <td><?php echo $pompa_nutb; ?></td>
                               <td><?php echo $pompa_pengaduk; ?></td>
+                              <td><?php echo $minggu; ?></td>
 
                               </div>
 									          	</td>

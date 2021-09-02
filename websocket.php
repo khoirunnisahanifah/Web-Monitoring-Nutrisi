@@ -21,7 +21,7 @@
   $tampilPeg = mysqli_query($conn, "SELECT * FROM tds_riwayat WHERE id_user=$sessionid");
   $peg    = mysqli_fetch_array($tampilPeg);
   $data1 = '';
-
+  $data2 = '';
   $tanggal = '';
 
   ?>
@@ -35,35 +35,31 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.css" integrity="sha512-C7hOmCgGzihKXzyPU/z4nv97W0d9bv4ALuuEbSf6hm93myico9qa0hv4dODThvCsqQUmKmLcJmlpRmCaApr83g==" crossorigin="anonymous" />
   <link rel="stylesheet" href="assets/css/dash.css"/>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js" type="text/javascript"></script>
 	<script >
-var hostname = "broker.emqx.io";
-var port = 8084;
-var sessionId = "<?php echo $_SESSION['id_user'] ?>";
-var clientId = sessionId;
+var hostname = "broker.mqttdashboard.com";
+var port = 8000;
+var clientId = "WebSocket";
+clientId += new Date().getUTCMilliseconds();;
 var topic = "client_id/hidro/sen1";
-var topic2 = "client_id/hidro/reAir";
-var topic3 = "client_id/hidro/reA";
-var topic4 = "client_id/hidro/reB";
+var topic2 = "client_id/hidro/reA";
+var topic3 = "client_id/hidro/reB";
+var topic4 = "client_id/hidro/reAir";
 var topic5 = "client_id/hidro/peng";
-var topic6 = "client_id/hidro/waktu";
-var topic7 = "client_id/hidro/mingg";
+var topic6 = "client_id/hidro/sen2";
 
 var tds1 = "";
-var reAir = "";
+var tds2= "";
 var reA = "";
 var reB= "";
+var reAir = "";
 var peng = "";
-var waktu="";
-var mingg="";
+
 
 
 mqttClient = new Paho.MQTT.Client(hostname, port, clientId);
 mqttClient.onMessageArrived = MessageArrived;
 mqttClient.onConnectionLost = ConnectionLost;
-Connect(clientId);
-
-console.log(clientId);
+Connect();
 
 /Initiates a connection to the MQTT broker/
 function Connect(){
@@ -71,8 +67,6 @@ function Connect(){
 	onSuccess: Connected,
 	onFailure: ConnectionFailed,
 	keepAliveInterval: 10,
-	useSSL: true,
-  
 });
 }
 
@@ -80,12 +74,11 @@ function Connect(){
 function Connected() {
 	console.log("Connected to broker");
 	mqttClient.subscribe(topic);
-  mqttClient.subscribe(topic2);
+    mqttClient.subscribe(topic2);
 	mqttClient.subscribe(topic3);
 	mqttClient.subscribe(topic4);
 	mqttClient.subscribe(topic5);
-  mqttClient.subscribe(topic6);
-  mqttClient.subscribe(topic7);
+	mqttClient.subscribe(topic6);
 }
 
 /Callback for failed connection/
@@ -103,61 +96,71 @@ function ConnectionLost(res) {
 
 /*Callback for incoming message processing */
 function MessageArrived(message) {
-  date = new Date();
-  millisecond = date.getMilliseconds();
-  detik = date.getSeconds();
-  menit = date.getMinutes();
-  jam = date.getHours();
-	console.log(message.destinationName +" : " + message.payloadString +" "+jam+" : "+menit+" : "+detik+"."+millisecond);
-	
+	console.log(message.destinationName +" : " + message.payloadString);
+
 	if (message.destinationName == "client_id/hidro/sen1" ) {
-		tds1 = message.payloadString;
-		document.getElementsByClassName("tds_value")[0].innerHTML=tds1;
-} 
-  if (message.destinationName == "client_id/hidro/reAir") {
-		reAir = message.payloadString;
-		document.getElementsByClassName("pompa_air")[0].innerHTML=reAir;
+		pulse = message.payloadString;
+		
+		document.getElementById("tds1").innerHTML=pulse;
+
+	} 
+
+	if (message.destinationName == "client_id/hidro/sen2") {
+		oksigen = message.payloadString;
+		document.getElementById("tds2").innerHTML=oksigen;
 	} 
 
 	if (message.destinationName == "client_id/hidro/reA") {
-		reA = message.payloadString;
-		document.getElementsByClassName("pompa_nuta")[0].innerHTML=reA;
+		oksigen = message.payloadString;
+		document.getElementById("reA").innerHTML=oksigen;
 	} 
 
 	if (message.destinationName == "client_id/hidro/reB") {
-		reB = message.payloadString;
-		document.getElementsByClassName("pompa_nutb")[0].innerHTML=reB;
+		oksigen = message.payloadString;
+		document.getElementById("reB").innerHTML=oksigen;
+	} 
+
+	if (message.destinationName == "client_id/hidro/reAir") {
+		oksigen = message.payloadString;
+		document.getElementById("reAir").innerHTML=oksigen;
 	} 
 
 	if (message.destinationName == "client_id/hidro/peng") {
-		peng = message.payloadString;
-		document.getElementsByClassName("pompa_pengaduk")[0].innerHTML=peng;
-	} 
-  if (message.destinationName == "client_id/hidro/waktu") {
-		waktu = message.payloadString;
-		document.getElementsByClassName("waktu")[0].innerHTML=waktu;
-	} 
-  if (message.destinationName == "client_id/hidro/mingg") {
-		mingg = message.payloadString;
-		document.getElementsByClassName("mingg")[0].innerHTML=mingg;
-    console.log(mingg);
+		oksigen = message.payloadString;
+		document.getElementById("peng").innerHTML=oksigen;
 	} 
 
 
-
+	
+	// var a=parseInt(message.payloadString);
+	// var ht=100-a;
+	// document.getElementById("top").style.height=""+ht+"%" ;
+	// document.getElementById("top").innerHTML=message.payloadString;
+	// document.getElementById("container").style.backgroundColor="yellow";
+	// switch(message.payloadString){
+	// 	case "ON":
+	// 		displayClass = "on";
+	// 		break;
+	// 	case "OFF":
+	// 		displayClass = "off";
+	// 		break;
+	// 	default:
+	// 		displayClass = "unknown";
+	// }
+	// var topic = message.destinationName.split("/");
+	// if (topic.length == 3){
+	// 	var ioname = topic[1];
+	// 	UpdateElement(ioname, displayClass);
+	// }
 }
 		</script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 </head>
 
 <body>
 <div class="loading">
     <div class="load">
-     <div class="clover">
-    
-    <div class="fade-in"></div>
-    <div class="fade-out"></div>
-    </div>
+    <div class="clover"><div class="fade-in"></div>
+        <div class="fade-out"></div></div>
       
     </div>
   </div>
@@ -183,8 +186,8 @@ function MessageArrived(message) {
                 <div class="dashboad-card__content"> 
                 <div class="img-dashboard"> <img src="assets/img/tds.png"/> </div>
                   <div class="dashboard-card__card-piece">
-                    <div class="status status_tds1">
-                    <div id="tds1"><textarea style="font-weight: bold; color: #FF7E65;" readonly name="tds_value" class="tds_value"  placeholder="0"  rows="1" cols="1" required></textarea> </div>
+                    <div  class="status status_tds1">
+                      <div id="tds1" > 0 </div> 
                       <div class="stats__unit stats__PPM"></div> 
                     </div>
                     <a href="tds_riwayat.php" class="dashboard-card__link" tabindex="1">Riwayat<span class="fa fa-angle-right"></span></a>
@@ -196,8 +199,8 @@ function MessageArrived(message) {
                 <div class="dashboad-card__content">
                 <div class="img-dashboard"> </div>
                   <div class="dashboard-card__card-piece">
-                                 
-                <img class="animated-gif" src="assets\img\hidro.gif">
+                    
+                  <img class="animated-gif" src="assets\img\hidro.gif">
                   </div>
                 </div>
               </div>
@@ -227,17 +230,12 @@ function MessageArrived(message) {
                         <label for="switch4" class="switch__label"></label>
                       </div> -->
                   <div class="dash_info_teks"> 
-                  <div id="mingg">Saat ini, Minggu Ke : <textarea style="font-weight: 900; color: #333;" readonly name="mingg" class="mingg" placeholder="Tekan Nomor " rows="1" cols="1" required></textarea>  </div>
-                    <h7> Bayam adalah tanaman hijau yang di tanam selama sekitar 30 hari. </h7> 
+                    <h7> Bayam adalah tanaman hijau yang di tanam selama sekitar 25 hari. </h7> 
                     <h7> Masa Tumbuh Bayam dibagi menjadi 4 minggu atau fase yaitu : </h7> <br/>
-                    <h7> - Minggu kesatu, semai </h7> <br/>
-                    <h7> - Minggu kedua, dibutuhkan sekitar 600-900 PPM nutrisi (1) </h7> <br/>
-                    <h7> - Minggu ketiga, dibutuhkan sekitar 900-1200 PPM nutrisi (2)</h7> <br/>
-                    <h7> - Minggu keempat, dibutuhkan sekitar 1200-1400 PPM nutrisi(3) </h7> <br/>
-                    <h7>  </h7> <br/>
-                    <h7> Ganti batas nilai nutrisi dengan keypad: </h7> <br/>
-                    <h7> 1.Tekan tombol no.1-3 untuk menentukan kadar nutrisi yang dibutuhkan </h7> <br/>
-                    <h7> 2.Jika ganti kebutuhan nutrisi, tekan tombol 4 dulu  untuk berhenti, lalu tekan tombol kebutuhan nutrisi. </h7> <br/>
+                    <h7> 1. Minggu pertama, dibutuhkan sekitar 400-600 PPM nutrisi </h7> <br/>
+                    <h7> 2. Minggu kedua, dibutuhkan sekitar 600-900 PPM nutrisi </h7> <br/>
+                    <h7> 3. Minggu ketiga, dibutuhkan sekitar 900-1200 PPM nutrisi </h7> <br/>
+                    <h7> 4. Minggu keempat, dibutuhkan sekitar 1200-1400 PPM nutrisi </h7> <br/>
  
                   </div>
                   </div>
@@ -254,7 +252,7 @@ function MessageArrived(message) {
                       <div class="stats__measure">
                         <div id="reAir" class="stats__value"> 
                         
-                          <div class="stats__value"><textarea style="font-weight: 900; color: #333;" readonly name="pompa_air" class="pompa_air" placeholder="OFF" rows="1" cols="1" required></textarea> </div>
+                          <div class="stats__value">OFF</div>
                          
                          </div> 
                         
@@ -270,7 +268,7 @@ function MessageArrived(message) {
                       <div class="stats__measure">
                         <div id="reA" class="stats__value"> 
                         
-                          <div class="stats__value"><textarea style="font-weight: 900; color: #333;" readonly name="pompa_nuta" class="pompa_nuta" placeholder="OFF" rows="1" cols="1" required></textarea> </div>
+                          <div class="stats__value">OFF</div>
                          
                          </div> 
                         
@@ -281,18 +279,18 @@ function MessageArrived(message) {
                   </div>
                   <div class="dashboard-card__card-piece">
                     <div class="stats__item">
-                      <div class="stats__title__nutrisiB">Nutrisi A</div>
+                      <div class="stats__title__nutrisiB">Nutrisi B</div>
                       <div class="stats__icon__nutB"><span class="fa fa-flask"></span></div>
                       <div class="stats__measure">
                         <div id="reB" class="stats__value"> 
                         
-                          <div class="stats__value"><textarea style="font-weight: 900; color: #333;" readonly name="pompa_nutb" class="pompa_nutb" placeholder="OFF" rows="1" cols="1" required></textarea> </div>
+                          <div class="stats__value">OFF</div>
                          
                          </div> 
                         
                         <div class="stats_unit stats_unit_power"></div>
                       </div>
-                    </div> 
+                    </div>
                     
                   </div>
                   <div class="dashboard-card__card-piece">
@@ -301,7 +299,7 @@ function MessageArrived(message) {
                       <div class="stats__icon__pengaduk"><span class="fa fa-i-cursor"></span></div>
                       <div class="stats__measure">
                         <div id="peng" class="stats__value">
-                          <div class="stats__value"><textarea style="font-weight: 900; color: #333;" readonly name="pompa_pengaduk" class="pompa_pengaduk" placeholder="OFF" rows="1" cols="1" required></textarea></div>
+                          <div class="stats__value">OFF</div>
                         
                       </div>
                     </div>
@@ -317,8 +315,57 @@ function MessageArrived(message) {
                <div class="dashboard-card__title">Grafik Nilai Nutrisi </div>
                 <div class="dashboad-card__content">
                   <div class="dashboard-card__card-piece">
-                   <div class="chart"></div>
-                  </div>  
+            
+                      <?php 
+                        $grafik1 = "SELECT * FROM tds_riwayat WHERE id_user=$sessionid";
+                        $regrafik1 = mysqli_query($conn, $grafik1);
+                        
+                    
+                      //loop through the returned data
+                      while ($row = mysqli_fetch_array($regrafik1)) {
+                    
+                        $data1 = $data1 . '"'. $row['tds_value1'].'",';
+                        $data2 = $data2 . '"'. $row['tds_value2'] .'",';
+                        $tanggal = $tanggal . '"'. $row['tanggal'] .'",';
+                      }
+                    
+                      $data1 = trim($data1,",");
+                      $data2 = trim($data2,",");
+                      $tanggal = trim($tanggal,",");
+                      ?>
+                        <canvas id="chart" style="overflow: hidden;  width: 100%; height: 300px; background: #ffffff;  margin-top: 10px;"></canvas>
+                        <script>
+                            var ctx = document.getElementById("chart").getContext('2d');
+                              var myChart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: [<?php echo $tanggal; ?>],
+                                    datasets: 
+                                    [{
+                                        label: 'Nutrisi Bak',
+                                        data: [<?php echo $data1; ?>],
+                                        backgroundColor: 'transparent',
+                                        borderColor:'rgba(255,126,101)',
+                                        borderWidth: 3
+                                    },
+
+                                    {
+                                      label: 'Nutrisi Gully',
+                                        data: [<?php echo $data2; ?>],
+                                        backgroundColor: 'transparent',
+                                        borderColor:'rgb(44,128,133)',
+                                        borderWidth: 3	
+                                    }]
+                                },
+                            
+                                options: {
+                                    scales: {scales:{yAxes: [{beginAtZero: false}], xAxes: [{autoskip: true, maxTicketsLimit: 20}]}},
+                                    tooltips:{mode: 'index'},
+                                    legend:{display: true, position: 'top', labels: {fontColor: 'rgb(0,0,0)', fontSize: 16}}
+                                }
+                            });
+                          </script>
+                   </div>  
                 </div>
               </div>
             </div>
@@ -332,46 +379,6 @@ function MessageArrived(message) {
   <?php include "part/all-js.php"; ?>
 
   <script src="./assets/js/loading.js"></script>
-  <script>  
- $(document).ready(function(){  
-      function autoSave()  
-      {  
-           var tds_value = $('.tds_value').val();  
-           var pompa_air = $('.pompa_air').val(); 
-           var pompa_nuta = $('.pompa_nuta').val();  
-           var pompa_nutb = $('.pompa_nutb').val();
-           var pompa_pengaduk = $('.pompa_pengaduk').val();
-           var mingg = $('.mingg').val();  
-           var id_user = "<?php echo $_SESSION['id_user'] ?>";  
-           if(tds_value != '' && pompa_air != '' && pompa_nuta != '' && pompa_nutb != '' && pompa_pengaduk != ''  && mingg != '' )  
-           {  
-                $.ajax({  
-                     url:"simpandatabase.php",  
-                     method:"POST",  
-                     data:{tdsValue:tds_value, relayAir:pompa_air, relayNuta:pompa_nuta, relayNutb:pompa_nutb, relayPengaduk:pompa_pengaduk, minggu:mingg, clientID:id_user},  
-                     dataType:"text",  
-                     success:function(data)  
-                     {  
-                          if(data != '')  
-                          {  
-                               $('#id_user').val(data);  
-                          }  
-                     }  
-                });  
-           }            
-      }  
-      setInterval(function(){   
-           autoSave();   
-           }, 60000);  //save tiap 1 mnt  1800000
- });  
- </script>
- <script type="text/javascript">
-    var auto_refresh = setInterval(
-    function () {
-       $('.chart').load('grafik.php').fadeIn("slow");
-    }, 5000); // refresh setiap 5 detik 
-    
-</script>
 </body>
 
 </html>

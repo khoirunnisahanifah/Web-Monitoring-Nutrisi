@@ -18,8 +18,8 @@
                         <thead>
                           <tr>
                             <th class="text-center">No</th>
-                            <th>waktu</th>
                             <th>Tgl</th>
+                            <th>Waktu</th>
                             <th>Nilai Nutrisi </th>
                             <th>Air</th>
                             <th>Nutrisi A</th>

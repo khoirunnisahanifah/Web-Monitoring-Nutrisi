@@ -21,7 +21,7 @@
     var auto_refresh = setInterval(
     function () {
        $('.tds-table').load('show.php').fadeIn("slow");
-    }, 60000); // refresh setiap 1 mnt
+    }, 60000); // refresh setiap 1 mnt 
     
 </script>
 </head>
